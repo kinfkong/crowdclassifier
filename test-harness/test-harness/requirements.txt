@@ -1,0 +1,10 @@
+future==0.15.2
+futures==3.0.5
+pyexcel==0.2.1
+pyexcel-io==0.1.0
+pyexcel-xls==0.1.0
+recordtype==1.1
+requests==2.10.0
+texttable==0.8.4
+xlrd==0.9.4
+xlwt-future==0.8.0

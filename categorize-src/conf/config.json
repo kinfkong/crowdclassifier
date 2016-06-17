@@ -1,0 +1,6 @@
+{
+    "trained_models_dir": "./trained_models",
+    "palo_alto_data_file": "./data/spreadsheet.xlsx",
+    "chile_data_file": "./data/Chile_Training_Data.xlsx",
+    "nltk_data_path": "~/"
+}
