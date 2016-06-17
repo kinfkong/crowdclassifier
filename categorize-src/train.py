@@ -20,7 +20,7 @@ chile_clf = chile_clf.fit(chile_data['data'], chile_data['categories'])
 chile_clf.dump(os.path.join(appConfig['trained_models_dir'], 'chile'))
 
 
-palo_alto_clf = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'english')
+palo_alto_clf = CrowdClassifier(5, [1, 1, 0.5, 0.25, 0.25], 'english')
 palo_alto_clf = palo_alto_clf.fit(palo_alto_data['data'], palo_alto_data['categories'])
 palo_alto_clf.dump(os.path.join(appConfig['trained_models_dir'], 'palo_alto'))
 

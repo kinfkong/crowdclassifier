@@ -33,7 +33,7 @@ app = Flask(__name__)
 chile_classifier = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'spanish')
 chile_classifier.load(os.path.join(appConfig['trained_models_dir'], 'chile'))
 
-palo_alto_classifier = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'english')
+palo_alto_classifier = CrowdClassifier(5, [1, 1, 0.5, 0.25, 0.25], 'english')
 palo_alto_classifier.load(os.path.join(appConfig['trained_models_dir'], 'palo_alto'))
 
 
