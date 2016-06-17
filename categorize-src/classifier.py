@@ -14,7 +14,7 @@ from nltk.stem.snowball import SnowballStemmer
 with open('conf/config.json', 'rt') as fd:
     appConfig = json.load(fd)
 
-if not appConfig['nltk_data_path']:
+if appConfig['nltk_data_path']:
     nltk.data.path.append(appConfig['nltk_data_path'])
 
 stemmers = {}
