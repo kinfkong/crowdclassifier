@@ -117,6 +117,8 @@ class CrowdClassifier:
 
         for i in range(0, self.category_level):
             for category_label in self.classifiers[i].classes_:
+                if probabilities[category_label] < 1e-9:
+                    continue
                 total_score = 0
                 main_category = self._get_categories(category_label)[0]
                 candidates = child_categories[i][main_category]
@@ -134,6 +136,8 @@ class CrowdClassifier:
         secondary_category_label = None
         for i in range(0, self.category_level):
             for category_label in self.classifiers[i].classes_:
+                if probabilities[category_label] < 1e-9:
+                    continue
                 total_score = 0
                 main_category = self._get_categories(category_label)[0]
                 main_category2 = self._get_categories(primary_category_label)[0]
