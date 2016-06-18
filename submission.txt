@@ -1,0 +1,11 @@
+* category-src - all the sources for my submission
+* test-harness - I modified a little about the test-harness because:
+
+Because the data of the categories are not normalized, it may:
+
+1). singular vs plural. For example, `Carpools` vs `Carpool` 
+2). typo exists. For example, `shttles`, `priavte`
+3). dash symbol. For example, `self driving cars` vs `self-driving cars`
+So, I updated the test-harness to handle these cases.
+
+so, please use the test-harness in my submission to test with the test data.
