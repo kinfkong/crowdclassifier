@@ -1,4 +1,4 @@
-import json
+import json, nltk, string
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -6,9 +6,9 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.externals import joblib
 
-import nltk
 from nltk import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
+
 
 # load configuration
 with open('conf/config.json', 'rt') as fd:
@@ -17,9 +17,12 @@ with open('conf/config.json', 'rt') as fd:
 if appConfig['nltk_data_path']:
     nltk.data.path.append(appConfig['nltk_data_path'])
 
-stemmers = {}
+
+stemmers = dict()
 stemmers['english'] = SnowballStemmer('english', ignore_stopwords=True)
 stemmers['spanish'] = SnowballStemmer('spanish', ignore_stopwords=True)
+
+punctuations = list(string.punctuation)
 
 
 def stem_tokens(tokens, stemmer):
@@ -30,33 +33,37 @@ def stem_tokens(tokens, stemmer):
 
 
 def english_tokenize(text):
+
     tokens = word_tokenize(text, 'english')
     stems = stem_tokens(tokens, stemmers['english'])
+    stems = [i for i in stems if i not in punctuations]
     return stems
 
 
 def spanish_tokenize(text):
     tokens = word_tokenize(text, 'spanish')
     stems = stem_tokens(tokens, stemmers['spanish'])
+    stems = [i for i in stems if i not in punctuations]
     return stems
 
 
 class CrowdClassifier:
-    classifiers = []
-    category_level = 0
-    level_scores = []
-
-    def __init__(self, category_level, level_scores, language='english'):
-
+    def __init__(self, category_level, level_scores, language, loss):
+        self.classifiers = []
+        self.category_level = 0
+        self.level_scores = []
         for i in range(0, category_level):
             tokenize = english_tokenize
             if language == 'spanish':
                 tokenize = spanish_tokenize
-            clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 3), tokenizer=tokenize)),
+
+            internal_classifier = SGDClassifier(loss=loss, penalty='l2', alpha=0.0001, n_iter=10, random_state=42)
+
+            clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 1), tokenizer=tokenize)),
                                  ('tfidf', TfidfTransformer(use_idf=True)),
-                                 ('clf', SGDClassifier(loss='modified_huber', penalty='l2', alpha=0.0001, n_iter=10,
-                                                       random_state=42)),
+                                 ('clf', internal_classifier),
                                  ])
+
             self.classifiers.append(clf)
 
         self.category_level = category_level
@@ -83,8 +90,6 @@ class CrowdClassifier:
         for i in range(0, self.category_level):
             clf = joblib.load(filename + '.level_%d' % (i + 1))
             self.classifiers.append(clf)
-
-    test_count = 0
 
     def predict(self, contents):
         result = []
@@ -123,10 +128,11 @@ class CrowdClassifier:
                 main_category = self._get_categories(category_label)[0]
                 candidates = child_categories[i][main_category]
                 for actual_label in candidates:
-                    score = self._cal_score(category_label, None, actual_label, i)
                     probability = probabilities[actual_label]
+                    if probability < 1e-9:
+                        continue
+                    score = self._cal_score(category_label, None, actual_label, i)
                     total_score += score * probability
-                    self.test_count += 1
                 if total_score > max_score:
                     max_score = total_score
                     primary_category_label = category_label
@@ -136,15 +142,19 @@ class CrowdClassifier:
         secondary_category_label = None
         for i in range(0, self.category_level):
             for category_label in self.classifiers[i].classes_:
-                if probabilities[category_label] < 1e-9:
+                if probabilities[category_label] < 1e-9 and secondary_category_label:
+                    continue
+                if category_label == primary_category_label:
                     continue
                 total_score = 0
                 main_category = self._get_categories(category_label)[0]
                 main_category2 = self._get_categories(primary_category_label)[0]
                 candidates = list(set(child_categories[i][main_category] + child_categories[i][main_category2]))
                 for actual_label in candidates:
-                    score = self._cal_score(primary_category_label, category_label, actual_label, i)
                     probability = probabilities[actual_label]
+                    if probability < 1e-9:
+                        continue
+                    score = self._cal_score(primary_category_label, category_label, actual_label, i)
                     total_score += score * probability
                 if total_score > max_score:
                     max_score = total_score
@@ -212,4 +222,3 @@ class CrowdClassifier:
         if not category_label:
             return None
         return map(lambda x: x if x != '$' else None, category_label.split('###'))
-

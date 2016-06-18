@@ -8,9 +8,8 @@ It provides a REST API to categorize the input documents.
 @version 1.0
 """
 
-import requests, json, logging, logging.config, os
+import json, logging.config, os
 from flask import Flask, request, jsonify, abort
-from sklearn.externals import joblib
 from classifier import CrowdClassifier
 
 
@@ -29,11 +28,10 @@ with open('conf/config.json', 'rt') as fd:
 # the flask app
 app = Flask(__name__)
 
-
-chile_classifier = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'spanish')
+chile_classifier = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'spanish', 'log')
 chile_classifier.load(os.path.join(appConfig['trained_models_dir'], 'chile'))
 
-palo_alto_classifier = CrowdClassifier(5, [1, 1, 0.5, 0.25, 0.25], 'english')
+palo_alto_classifier = CrowdClassifier(5, [1, 1, 0.5, 0.25, 0.25], 'english', 'modified_huber')
 palo_alto_classifier.load(os.path.join(appConfig['trained_models_dir'], 'palo_alto'))
 
 
@@ -74,12 +72,12 @@ def categorize(data_type):
     '''
 
     data = request.get_json()
-    # print(data)
 
     results = map(lambda x: {'id': x['id'], 'content': x['content']}, data['document'])
     contents = map(lambda x: x['content'], data['document'])
 
     # predict the contents
+    predicted = None
     if data_type == 'paloalto':
         predicted = palo_alto_classifier.predict(contents)
     elif data_type == 'chile':

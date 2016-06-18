@@ -129,6 +129,7 @@ def calculate_scores(submission, expectedDoc, categorizedDoc):
         print('')
 
     if not primaryMainCategoryEqual and secondaryMainCategoryEqual:
+        print('Secondary Hit!!!')
         score += 0.5
 
     if not submission.single:

@@ -7,10 +7,10 @@ Load the pre-categorized data into a text index on the HPE Haven OnDeman platfor
 @version 1.0
 """
 
-import sys, argparse, json, os
+import json
 import pyexcel
 import pyexcel.ext.xls
-import logging, logging.config
+import logging.config
 
 # setup logging
 with open('conf/logging.json', 'rt') as fd:
@@ -60,6 +60,7 @@ def normalize_category(category, category_dict):
         result = CATEGORY_NAME_MAPPINGS[result]
     return result
 
+
 def get_column_value(row, columnIdx, rowLen):
     '''
     Get column value from the row array
@@ -81,9 +82,10 @@ def load_data(data_file):
     sheet = pyexcel.get_sheet(file_name=data_file)
     header_row = True
     contents = []
-    raw_categories = []
+
     category_dict = {}
     categories_items = []
+
     for row in sheet.row:
         if header_row:
             header_row = False
@@ -93,21 +95,13 @@ def load_data(data_file):
         if row_len < 2:
             break
 
-        composite_category = None
         categories_item = []
         for i in range(2, 7):
             category = normalize_category(get_column_value(row, i, row_len), category_dict)
-            if category is None:
-                break
             categories_item.append(category)
-            raw_categories.append(category)
-            if composite_category is None:
-                composite_category = category
-            else:
-                composite_category += '###' + category
-        if composite_category is not None:
-            contents.append(row[1])
-            categories_items.append(categories_item)
+
+        contents.append(row[1])
+        categories_items.append(categories_item)
 
     return {
         'data': contents,
