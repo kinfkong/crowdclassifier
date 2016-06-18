@@ -1,20 +1,21 @@
 {
-	"id": "848ac3d4-4c0f-3657-713f-b4a0595120ec",
+	"id": "1e84b988-82e7-5264-306b-8f8d6e6575b7",
 	"name": "HPE",
 	"description": "",
 	"order": [
-		"70361eb1-c9d0-09d6-5681-e54aab840a85"
+		"6797892d-c049-264c-ab3c-4de3e90abee9",
+		"4ad79821-c1b1-2d74-6a7e-5b9b09e83b12"
 	],
 	"folders": [],
 	"timestamp": 1464448457889,
-	"owner": "466463",
+	"owner": 0,
 	"remoteLink": "",
 	"public": false,
 	"requests": [
 		{
-			"id": "70361eb1-c9d0-09d6-5681-e54aab840a85",
+			"id": "4ad79821-c1b1-2d74-6a7e-5b9b09e83b12",
 			"headers": "Content-Type: application/json\n",
-			"url": "https://whispering-crag-71725.herokuapp.com/api/v1/categorize",
+			"url": "http://52.193.210.43:5000/api/v1/categorize/paloalto",
 			"preRequestScript": null,
 			"pathVariables": {},
 			"method": "POST",
@@ -24,12 +25,32 @@
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {},
-			"time": 1464487773810,
-			"name": "https://whispering-crag-71725.herokuapp.com/api/v1/categorize",
+			"time": 1466218748105,
+			"name": "Palo Alto",
 			"description": "",
-			"collectionId": "848ac3d4-4c0f-3657-713f-b4a0595120ec",
+			"collectionId": "1e84b988-82e7-5264-306b-8f8d6e6575b7",
 			"responses": [],
-			"rawModeData": "{\n    \"document\": [\n        {\n            \"id\": \"1\",\n            \"content\": \"Free public transportation\"\n        },\n        {\n            \"id\": \"2\",\n            \"content\": \"enforce distracted driving laws\"\n        }\n    ]\n}"
+			"rawModeData": "{\n    \"document\": [\n        {\n            \"id\": \"1\",\n            \"content\": \"tax on cars ownerships \"\n        },\n         {\n            \"id\": \"2\",\n            \"content\": \"Of course all decisions need to be made in a regional context. People don't use transit within one jurisdiction so coordination is a must!  Make sure that transit works seamlessly to reduce stress and increase convenience. VTA Buses should such up with SamTrans and Caltrain and you need frequency so people don't need to wait for more than a few minutes for transit connections.\"\n        }\n    ]\n}"
+		},
+		{
+			"id": "6797892d-c049-264c-ab3c-4de3e90abee9",
+			"headers": "Content-Type: application/json\n",
+			"url": "http://52.193.210.43:5000/api/v1/categorize/chile",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1466218835112,
+			"name": "Chile",
+			"description": "",
+			"collectionId": "1e84b988-82e7-5264-306b-8f8d6e6575b7",
+			"responses": [],
+			"rawModeData": "{\n    \"document\": [\n        {\n            \"id\": \"1\",\n            \"content\": \"La Nueva Constitucion tambien debe reconocer que Chile es una Comunidad Organizada de destino suramericano.\"\n        },\n         {\n            \"id\": \"2\",\n            \"content\": \"Por el reconocimiento constitucional de nosotros las personas con discapacidad\"\n        }\n    ]\n}"
 		}
 	]
 }

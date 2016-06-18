@@ -28,6 +28,7 @@ with open('conf/config.json', 'rt') as fd:
 # the flask app
 app = Flask(__name__)
 
+# load the classifiers
 chile_classifier = CrowdClassifier(1, [1, 1, 0.5, 0.25, 0.25], 'spanish', 'log')
 chile_classifier.load(os.path.join(appConfig['trained_models_dir'], 'chile'))
 
@@ -36,12 +37,12 @@ palo_alto_classifier.load(os.path.join(appConfig['trained_models_dir'], 'palo_al
 
 
 def get_value(doc, key):
-    '''
+    """
     Extract the value from the document by key
-    Args:
-        doc: the document dictionary
-        key: the dictionary key
-    '''
+    :param doc: the document dictionary
+    :param key: the dictionary key
+    :return:
+    """
 
     value = doc.get(key)
     if value is None:
@@ -52,8 +53,12 @@ def get_value(doc, key):
         return value[0]
 
 
-def split_category(categories):
-
+def show_category(categories):
+    """
+    Converts the category names from array to readable name.
+    :param categories: the category arrays
+    :return: the category label
+    """
     names = ['main_category', 'subcategory1', 'subcategory2', 'subcategory3', 'subcategory4']
     result = {}
     prefixes = ['primary_', 'secondary_']
@@ -67,9 +72,11 @@ def split_category(categories):
 
 @app.route('/api/v1/categorize/<data_type>', methods=['POST'])
 def categorize(data_type):
-    '''
+    """
     The REST API to categorize the input documents
-    '''
+    :param data_type: paloalto or chile
+    :return: categories of the documents
+    """
 
     data = request.get_json()
 
@@ -86,7 +93,7 @@ def categorize(data_type):
         abort(404)
 
     for i in range(0, len(predicted)):
-        results[i].update(split_category(predicted[i]))
+        results[i].update(show_category(predicted[i]))
 
     # return the results
     return jsonify({'document': results})

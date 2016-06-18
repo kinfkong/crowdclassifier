@@ -1,3 +1,9 @@
+### Algorithm Description
+This component uses SVM to do the text classification.
+It uses these libraries:
+* [scikit] (http://scikit-learn.org/) - provides the main SVM algorithm.
+* [nltk] (http://www.nltk.org/) - handle text processing.
+
 ### Setup Python Virtual Environment
 Make sure Python 2.7, Python-devel and virtualenv are installed. 
 
@@ -43,12 +49,12 @@ If you desired, you can modify the `trained_models_dir` in `conf/config.json` to
 
 Train the Palo Alto data: 
 ```sh
-python train.py paloalto ./data/palo_alto_train_data.xlsx
+python train.py paloalto ./data/palo_alto_data.xlsx
 ```
 
 Train the chile data:
 ```sh
-python train.py chile ./data/chile_train_data.xlsx
+python train.py chile ./data/chile_data.xlsx
 ```
 
 
@@ -77,5 +83,16 @@ http://52.193.210.43:5000/api/v1/categorize/chile
 ```
 
 ### Verification
+
 Load the `doc/HPE.postman_collection.json` file in your postman, it contains a test to post data to the deployed aws app api endpoint above. 
-Send the request, and you will receive the categorized response. 
+Send the request, and you will receive the categorized response.
+ 
+Please use the `test-harness` in my submission to test with the test data.
+Because the data of the categories are not normalized, it may:
+```
+1). singular vs plural. For example, "Carpools" vs "Carpool" 
+2). typo exists. For example, "shttles", "priavte"
+3). dash symbol. For example, "self driving cars" vs "self-driving cars"
+```
+
+So, I updated the `test-harness` to handle these cases.

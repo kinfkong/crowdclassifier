@@ -1,23 +1,34 @@
-import json, nltk, string
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.linear_model import SGDClassifier
-from sklearn.feature_extraction.text import TfidfTransformer
+"""
+Copyright (C) 2016 TopCoder Inc., All Rights Reserved.
 
-from sklearn.pipeline import Pipeline
-from sklearn.externals import joblib
+Classifiers the text documents. It provides method to train(fit) or predict.
+
+@author TCSCODER
+@version 1.0
+"""
+
+import json
+import nltk
+import string
 
 from nltk import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
-
+from sklearn.externals import joblib
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.linear_model import SGDClassifier
+from sklearn.pipeline import Pipeline
 
 # load configuration
 with open('conf/config.json', 'rt') as fd:
     appConfig = json.load(fd)
 
+# set the nltk data path if necessary
 if appConfig['nltk_data_path']:
     nltk.data.path.append(appConfig['nltk_data_path'])
 
 
+# create the stemmers
 stemmers = dict()
 stemmers['english'] = SnowballStemmer('english', ignore_stopwords=True)
 stemmers['spanish'] = SnowballStemmer('spanish', ignore_stopwords=True)
@@ -26,6 +37,12 @@ punctuations = list(string.punctuation)
 
 
 def stem_tokens(tokens, stemmer):
+    """
+    stem the tokens
+    :param tokens: the tokens to stem
+    :param stemmer: the stemmer
+    :return: the stemmed tokens
+    """
     stemmed = []
     for item in tokens:
         stemmed.append(stemmer.stem(item))
@@ -33,7 +50,11 @@ def stem_tokens(tokens, stemmer):
 
 
 def english_tokenize(text):
-
+    """
+    the text to tokenize for english.
+    :param text: the text
+    :return: the tokens array
+    """
     tokens = word_tokenize(text, 'english')
     stems = stem_tokens(tokens, stemmers['english'])
     stems = [i for i in stems if i not in punctuations]
@@ -41,6 +62,11 @@ def english_tokenize(text):
 
 
 def spanish_tokenize(text):
+    """
+    the text to tokenize for spanish.
+    :param text: the text
+    :return: the tokens array
+    """
     tokens = word_tokenize(text, 'spanish')
     stems = stem_tokens(tokens, stemmers['spanish'])
     stems = [i for i in stems if i not in punctuations]
@@ -48,7 +74,18 @@ def spanish_tokenize(text):
 
 
 class CrowdClassifier:
+    """
+    The classifier for text classification.
+    """
+
     def __init__(self, category_level, level_scores, language, loss):
+        """
+        Initialize the classifier
+        :param category_level: the category level, 1 for chile, and 5 for palo alto
+        :param level_scores: the scores
+        :param language: the language, english or spanish
+        :param loss: the SVM loss parameter
+        """
         self.classifiers = []
         self.category_level = 0
         self.level_scores = []
@@ -70,6 +107,12 @@ class CrowdClassifier:
         self.level_scores = level_scores
 
     def fit(self, contents, categories):
+        """
+        Fit the contents to the categories. This is the trainning method.
+        :param contents: the contents.
+        :param categories: the categories
+        :return: the classifier.
+        """
         for i in range(0, self.category_level):
             level_categories = []
             level_contents = []
@@ -82,16 +125,29 @@ class CrowdClassifier:
         return self
 
     def dump(self, filename):
+        """
+        Persist the classifiers.
+        :param filename: the filename to save the classifiers.
+        """
         for idx, clf in enumerate(self.classifiers):
             joblib.dump(clf, filename + '.level_%d' % (idx + 1))
 
     def load(self, filename):
+        """
+        Loads the classifiers from file.
+        :param filename: the filename.
+        """
         self.classifiers = []
         for i in range(0, self.category_level):
             clf = joblib.load(filename + '.level_%d' % (i + 1))
             self.classifiers.append(clf)
 
     def predict(self, contents):
+        """
+        Predicts the contents.
+        :param contents: the contents to predict.
+        :return: the predicted result (categories)
+        """
         result = []
         probabilities = {}
         for idx, clf in enumerate(self.classifiers):
@@ -107,6 +163,11 @@ class CrowdClassifier:
         return result
 
     def _predict(self, probabilities):
+        """
+        This is the helper method for predict a single content.
+        :param probabilities: the probabilities of each classifier.
+        :return: the predicted result
+        """
         child_categories = []
         for i in range(0, self.category_level):
             child_categories.append({})
@@ -163,6 +224,14 @@ class CrowdClassifier:
         return [self._get_categories(primary_category_label), self._get_categories(secondary_category_label)]
 
     def _cal_score(self, primary_category_label, secondary_category_label, actual_category_label, max_level):
+        """
+        This is a helper method to calculate the score for a predict result.
+        :param primary_category_label: the primary category
+        :param secondary_category_label: the secondary category
+        :param actual_category_label: the actual category
+        :param max_level: the max level we concerned
+        :return: the score
+        """
         primary_categories = self._get_categories(primary_category_label)
         if not secondary_category_label:
             secondary_categories = None
@@ -202,6 +271,12 @@ class CrowdClassifier:
 
     @staticmethod
     def _get_category_label(category_obj, level):
+        """
+        Gets the category label
+        :param category_obj: the category object. (array representation)
+        :param level: the level
+        :return: the category (string representation)
+        """
         result = ''
         for i in range(0, level + 1):
             if i < len(category_obj):
@@ -219,6 +294,11 @@ class CrowdClassifier:
 
     @staticmethod
     def _get_categories(category_label):
+        """
+        Converts the category from string representation to array representation.
+        :param category_label: the category label
+        :return: the category (in array representation)
+        """
         if not category_label:
             return None
         return map(lambda x: x if x != '$' else None, category_label.split('###'))

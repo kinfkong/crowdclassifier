@@ -1,7 +1,20 @@
-import os, json, sys, argparse
+"""
+Copyright (C) 2016 TopCoder Inc., All Rights Reserved.
+
+It trains the text documents.
+
+@author TCSCODER
+@version 1.0
+"""
+
+
+import argparse
+import json
+import os
+import sys
+
 from classifier import CrowdClassifier
 from load_data import load_data
-
 
 # load configuration
 with open('conf/config.json', 'rt') as fd:
@@ -9,6 +22,9 @@ with open('conf/config.json', 'rt') as fd:
 
 
 def main():
+    """
+    The main process
+    """
     # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('dataType', help='The data type, "paloalto" or "chile"')

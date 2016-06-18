@@ -1,16 +1,17 @@
 """
 Copyright (C) 2016 TopCoder Inc., All Rights Reserved.
 
-Load the pre-categorized data into a text index on the HPE Haven OnDeman platform.
+Load the pre-categorized data to memory
 
 @author TCSCODER
 @version 1.0
 """
 
 import json
+import logging.config
+
 import pyexcel
 import pyexcel.ext.xls
-import logging.config
 
 # setup logging
 with open('conf/logging.json', 'rt') as fd:
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 with open('conf/config.json', 'rt') as fd:
     appConfig = json.load(fd)
 
+# the category names for normalization
 CATEGORY_NAME_MAPPINGS = {
     'bike lanes and pedestrain paths': 'Bike Lanes and Pedestrian Paths',
     'Bike lanes and pedestrian paths': 'Bike Lanes and Pedestrian Paths',
@@ -43,6 +45,12 @@ CATEGORY_NAME_MAPPINGS = {
 
 
 def normalize_category(category, category_dict):
+    """
+    Normalize the categories.
+    :param category:  the category to normalize
+    :param category_dict: the dictionary of categories
+    :return: the category that normalized
+    """
     if category is None:
         return None
 
@@ -61,23 +69,27 @@ def normalize_category(category, category_dict):
     return result
 
 
-def get_column_value(row, columnIdx, rowLen):
-    '''
+def get_column_value(row, column_idx, row_len):
+    """
     Get column value from the row array
-    '''
+    :param row: the row to parse
+    :param column_idx: the column index
+    :param row_len: the row len
+    :return: the value
+    """
 
-    if columnIdx < rowLen:
-        return row[columnIdx]
+    if column_idx < row_len:
+        return row[column_idx]
     else:
         return None
 
 
 def load_data(data_file):
-    '''
-    Add the data loaded from a spreadsheet file to a text index
-    Args:
-        data_file: the data file name
-    '''
+    """
+    Loads the data to memory.
+    :param data_file: the data file name.
+    :return: the document array
+    """
 
     sheet = pyexcel.get_sheet(file_name=data_file)
     header_row = True
