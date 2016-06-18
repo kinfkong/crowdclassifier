@@ -1,2 +1,2 @@
 submission id,dataType,endpoint,score,overall accuracy,main category accuracy,subcategory 1 accuracy,subcategory 2 accuracy,subcategory 3 accuracy,subcategory 4 accuracy
-11,paloalto,http://localhost:5000/api/v1/categorize/paloalto,26.25,57.14%,85.71%,50.00%,35.71%,14.29%,100.00%
+11,paloalto,http://52.193.210.43:5000/api/v1/categorize/paloalto,935.25,99.68%,100.00%,99.04%,99.68%,99.68%,100.00%

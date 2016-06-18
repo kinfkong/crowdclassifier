@@ -1,2 +1,2 @@
 submission id,dataType,endpoint,score,overall accuracy,main category accuracy,subcategory 1 accuracy,subcategory 2 accuracy,subcategory 3 accuracy,subcategory 4 accuracy
-11,chile,http://localhost:5000/api/v1/categorize/chile,19.0,34.78%,34.78%,0.00%,0.00%,0.00%,0.00%
+11,chile,http://52.193.210.43:5000/api/v1/categorize/chile,1039.5,99.14%,99.14%,0.00%,0.00%,0.00%,0.00%
